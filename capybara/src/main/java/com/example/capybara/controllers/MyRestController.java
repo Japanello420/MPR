@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -54,8 +58,27 @@ public class MyRestController {
         return this.capybaraService.getByColor(color);
     }
 
-    @GetMapping("/id/{Id}")
-    public Optional<Capybara> findById(@PathVariable Long Id) {
-        return this.capybaraService.getById(Id);
+//    @GetMapping("/id/{Id}")
+//    public Optional<Capybara> findById(@PathVariable Long Id) {
+//        return this.capybaraService.getById(Id);
+//    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<byte[]> findById(@PathVariable Long id) {
+        Optional<Capybara> capybaraOptional = this.capybaraService.getById(id);
+
+        if (capybaraOptional.isPresent()) {
+            Capybara capybara = capybaraOptional.get();
+            byte[] pdfContent = capybaraService.generatePdfForCapybara(capybara);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+//            headers.setContentDispositionFormData("inline", "capybara_" + id + ".pdf");
+
+            return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 }

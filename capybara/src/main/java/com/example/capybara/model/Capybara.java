@@ -34,7 +34,6 @@ public class Capybara {
             }
         }
 
-        // Dodaj wartości znaków z lastName
         if (color != null) {
             for (char c : color.toCharArray()) {
                 sum += c;
